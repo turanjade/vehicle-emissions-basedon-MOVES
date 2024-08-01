@@ -1,13 +1,14 @@
 ######input: dir&filename of fleetshare; category of ER file 
 ######category of the ER: model year, pt/pc; summerorwinter; gasoline/diesel
+###details, refers to MOVES-EPA webpage
 import numpy as np
 
 def fleetshare_er(fleetsharedir, fleetsharename, erdir, year, summerorwinter, gasolineordiesel):
 	
 	#####read files
 	fleetfile = open(fleetsharedir + '/' + fleetsharename + '.csv','r') ###fleet share file
-	pc=str(erdir + '/' + year + '_' + summerorwinter + '_' + 'pc' + '.csv')
-	pt=str(erdir + '/' + year + '_' + summerorwinter + '_' + 'pt' + '.csv')
+	pc=str(erdir + '/' + year + '_' + summerorwinter + '_' + 'pc' + '.csv') ###prepare a private car emission rate profile
+	pt=str(erdir + '/' + year + '_' + summerorwinter + '_' + 'pt' + '.csv') ###prepare a private truck (SUV) emission rate profile
 	movespcfile = open(pc, 'r')
 	movesptfile = open(pt, 'r')
 	print(movespcfile)
