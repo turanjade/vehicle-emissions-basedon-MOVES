@@ -1,16 +1,21 @@
 ###########have to get col index of speed, acc
 ###input speed should be km/h, acc should be m/s2
 ###input traj should be vehicle specific
-def veh_opmode(traj, speedcol, acccol, vehidcol, linkidcol, timecol):
+
+def veh_opmode(traj, speedcol, acccol, vehidcol, linkidcol, timecol, vsp_coef_pc):
+	#traj: second-by-second trajectory profile; speedcol: the colnum of speed; acccol: the colnum of acceleration, same as vehidcol, linkidcol, timecol;
+	#vsp_coef_pc: vsp calculation coefficient for pc, as a numeric list
+	#speed unit: kmh, convert to m/s and mph, acc unit: m/s2, convert to mph/s
 	count=0
 	acc=[]
 	for line in traj:
 		cols = [float(x) for x in traj]
 		acc.append(cols[acccol]*3.6/1.6)
-		speedm=cols[speedcol]/3.6 
+		speedm=cols[speedcol]/3.6
 		speedi=cols[speedcol]/1.6
 
-		pcvsp = (0.156461*speedm+0.00200193*(speedm)**2+0.000492646*(speedm)**3+cols[4]*speedm*1.4788)/1.4788
+		#vsp_coef_pc = [0.156461, 0.00200193, 0.000492646, 1.4788]
+		pcvsp = (vsp_coef_pc[1]*speedm+vsp_coef_pc[2]*(speedm)**2+vsp_coef_pc[3]*(speedm)**3+cols[4]*speedm*vsp_coef_pc[4])/vsp_coef_pc[4]
 
 		if count>=2:
 			if acc[count]< -2 or (acc[count]< -1 and acc[count-1]< -1 and acc[count-2]< -1):######problem here
@@ -83,7 +88,7 @@ def veh_opmode(traj, speedcol, acccol, vehidcol, linkidcol, timecol):
 					pcopmode=30
 				elif speedi>=50:
 					pcopmode=40
-					
+
 		elif count<2:
 			if speedi<1 and speedi>=-1:
 				pcopmode=1
@@ -156,6 +161,6 @@ def veh_opmode(traj, speedcol, acccol, vehidcol, linkidcol, timecol):
 		count = count + 1
 		if count % 100000 == 0:
 			print (count)
-			
+
 		trajwithopmode = [cols[vehidcol], cols[linkidcol], cols[timecol], cols[speedcol], cols[acccol], pcopmode]
 	return trajwithopmode
