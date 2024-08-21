@@ -2,7 +2,12 @@
 ###input speed should be km/h, acc should be m/s2
 ###input traj should be vehicle specific
 
-def veh_opmode(traj, speedcol, acccol, vehidcol, linkidcol, timecol, vsp_coef_pc):
+def vsp(speed, acc, g, grade, vsp_coef):
+	vsp = (vsp_coef[0]*speed + vsp_coef[1]*(speed)**2 + vsp_coef[2]*(speed)**3 + (acc + g*sin(grade))*speed*vsp_coef[3])/vsp_coef[3]
+	return vsp
+
+	#speedm in unit m/s, acc in unit m/m2
+def veh_opmode(traj, speedcol, acccol, vehidcol, linkidcol, timecol, vsp_coef_pc, g, grade):
 	#traj: second-by-second trajectory profile; speedcol: the colnum of speed; acccol: the colnum of acceleration, same as vehidcol, linkidcol, timecol;
 	#vsp_coef_pc: vsp calculation coefficient for pc, as a numeric list
 	#speed unit: kmh, convert to m/s and mph, acc unit: m/s2, convert to mph/s
@@ -15,7 +20,8 @@ def veh_opmode(traj, speedcol, acccol, vehidcol, linkidcol, timecol, vsp_coef_pc
 		speedi=cols[speedcol]/1.6
 
 		#vsp_coef_pc = [0.156461, 0.00200193, 0.000492646, 1.4788]
-		pcvsp = (vsp_coef_pc[1]*speedm+vsp_coef_pc[2]*(speedm)**2+vsp_coef_pc[3]*(speedm)**3+cols[4]*speedm*vsp_coef_pc[4])/vsp_coef_pc[4]
+		pcvsp = vsp(speedm, cols[acccol], g, grade, vsp_coef_pc)
+		#speedm in unit m/s, acc in unit m/m2
 
 		if count>=2:
 			if acc[count]< -2 or (acc[count]< -1 and acc[count-1]< -1 and acc[count-2]< -1):######problem here
