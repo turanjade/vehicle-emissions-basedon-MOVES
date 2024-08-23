@@ -6,167 +6,77 @@ def vsp(speed, acc, g, grade, vsp_coef):
 	vsp = (vsp_coef[0]*speed + vsp_coef[1]*(speed)**2 + vsp_coef[2]*(speed)**3 + (acc + g*sin(grade))*speed*vsp_coef[3])/vsp_coef[3]
 	return vsp
 
-	#speedm in unit m/s, acc in unit m/m2
-def veh_opmode(traj, speedcol, acccol, vehidcol, linkidcol, timecol, vsp_coef_pc, g, grade):
-	#traj: second-by-second trajectory profile; speedcol: the colnum of speed; acccol: the colnum of acceleration, same as vehidcol, linkidcol, timecol;
-	#vsp_coef_pc: vsp calculation coefficient for pc, as a numeric list
-	#speed unit: kmh, convert to m/s and mph, acc unit: m/s2, convert to mph/s
-	count=0
-	acc=[]
-	for line in traj:
-		cols = [float(x) for x in traj]
-		acc.append(cols[acccol]*3.6/1.6)
-		speedm=cols[speedcol]/3.6
-		speedi=cols[speedcol]/1.6
-
-		#vsp_coef_pc = [0.156461, 0.00200193, 0.000492646, 1.4788]
-		pcvsp = vsp(speedm, cols[acccol], g, grade, vsp_coef_pc)
-		#speedm in unit m/s, acc in unit m/m2
-
-		if count>=2:
-			if acc[count]< -2 or (acc[count]< -1 and acc[count-1]< -1 and acc[count-2]< -1):######problem here
-				pcopmode=0
-				###########Braking
-			elif speedi<1 and speedi>=-1:
-				pcopmode=1
-			###########Idle
-			elif pcvsp < 0:
-				if speedi>=1 and speedi<25:
-					pcopmode=11
-				elif speedi>=25 and speedi<50:
-					pcopmode=21
-				elif speedi>=50:
-					pcopmode=33
-			###########Coast
-			elif pcvsp<3 and pcvsp>=0:
-				if speedi>=1 and speedi<25:
-					pcopmode=12
-				elif speedi>=25 and speedi<50:
-					pcopmode=22
-				elif speedi>=50:
-					pcopmode=33
-			elif pcvsp<6 and pcvsp>=3:
-				if speedi>=1 and speedi<25:
-					pcopmode=13
-				elif speedi>=25 and speedi<50:
-					pcopmode=23
-				elif speedi>=50:
-					pcopmode=33
-			elif pcvsp<9 and pcvsp>=6:
-				if speedi>=1 and speedi<25:
-					pcopmode=14
-				elif speedi>=25 and speedi<50:
-					pcopmode=24
-				elif speedi>=50:
-					pcopmode=35
-			elif pcvsp<12 and pcvsp>=9:
-				if speedi>=1 and speedi<25:
-					pcopmode=15
-				elif speedi>=25 and speedi<50:
-					pcopmode=25
-				elif speedi>=50:
-					pcopmode=35
-			elif pcvsp<18 and pcvsp>=12:
-				if speedi>=1 and speedi<25:
-					pcopmode=16
-				elif speedi>=25 and speedi<50:
-					pcopmode=27
-				elif speedi>=50:
-					pcopmode=37
-			elif pcvsp<24 and pcvsp>=18:
-				if speedi>=1 and speedi<25:
-					pcopmode=16
-				elif speedi>=25 and speedi<50:
-					pcopmode=28
-				elif speedi>=50:
-					pcopmode=38
-			elif pcvsp<30 and pcvsp>=24:
-				if speedi>=1 and speedi<25:
-					pcopmode=16
-				elif speedi>=25 and speedi<50:
-					pcopmode=29
-				elif speedi>=50:
-					pcopmode=39
-			elif pcvsp>=30:
-				if speedi>=1 and speedi<25:
-					pcopmode=16
-				elif speedi>=25 and speedi<50:
-					pcopmode=30
-				elif speedi>=50:
-					pcopmode=40
-
-		elif count<2:
-			if speedi<1 and speedi>=-1:
-				pcopmode=1
-			###########Idle
-			elif pcvsp < 0:
-				if speedi>=1 and speedi<25:
-					pcopmode=11
-				elif speedi>=25 and speedi<50:
-					pcopmode=21
-				elif speedi>=50:
-					pcopmode=33
-			###########Coast
-			elif pcvsp<3 and pcvsp>=0:
-				if speedi>=1 and speedi<25:
-					pcopmode=12
-				elif speedi>=25 and speedi<50:
-					pcopmode=22
-				elif speedi>=50:
-					pcopmode=33
-			elif pcvsp<6 and pcvsp>=3:
-				if speedi>=1 and speedi<25:
-					pcopmode=13
-				elif speedi>=25 and speedi<50:
-					pcopmode=23
-				elif speedi>=50:
-					pcopmode=33
-			elif pcvsp<9 and pcvsp>=6:
-				if speedi>=1 and speedi<25:
-					pcopmode=14
-				elif speedi>=25 and speedi<50:
-					pcopmode=24
-				elif speedi>=50:
-					pcopmode=35
-			elif pcvsp<12 and pcvsp>=9:
-				if speedi>=1 and speedi<25:
-					pcopmode=15
-				elif speedi>=25 and speedi<50:
-					pcopmode=25
-				elif speedi>=50:
-					pcopmode=35
-			elif pcvsp<18 and pcvsp>=12:
-				if speedi>=1 and speedi<25:
-					pcopmode=16
-				elif speedi>=25 and speedi<50:
-					pcopmode=27
-				elif speedi>=50:
-					pcopmode=37
-			elif pcvsp<24 and pcvsp>=18:
-				if speedi>=1 and speedi<25:
-					pcopmode=16
-				elif speedi>=25 and speedi<50:
-					pcopmode=28
-				elif speedi>=50:
-					pcopmode=38
-			elif pcvsp<30 and pcvsp>=24:
-				if speedi>=1 and speedi<25:
-					pcopmode=16
-				elif speedi>=25 and speedi<50:
-					pcopmode=29
-				elif speedi>=50:
-					pcopmode=39
-			elif pcvsp>=30:
-				if speedi>=1 and speedi<25:
-					pcopmode=16
-				elif speedi>=25 and speedi<50:
-					pcopmode=30
-				elif speedi>=50:
-					pcopmode=40
-
-		count = count + 1
-		if count % 100000 == 0:
-			print (count)
-
-		trajwithopmode = [cols[vehidcol], cols[linkidcol], cols[timecol], cols[speedcol], cols[acccol], pcopmode]
-	return trajwithopmode
+def opmode_id(speed, acc_series, vsp):
+	#speed in mph, acc_series includes the acceleration in the consecutive 3 seconds, according to the definition of OpMode by USEPA
+	count = len(acc_series) #track the length of the driving trajectory.
+	if count >=2:
+		if acc[count]< -2 or (acc[count]< -1 and acc[count-1]< -1 and acc[count-2]< -1):######problem here
+			opmode = 0   ###Braking
+		return opmode
+		break
+	else:
+		if speed < 1 and speed >= 0:
+			opmode = 1   ###idling
+		elif vsp < 0: ###coast down
+			if speed >= 1 and speed <= 25:
+				opmode = 11
+			elif speed >=25 and speed <50:
+				opmode = 21
+			elif speed >= 50:
+				opmode = 33
+		elif vsp <3 and vsp >= 0:
+			if speed >= 1 and speed < 35:
+				opmode = 12
+			elif speed >= 25 and speed < 50:
+				opmode = 22
+			elif speed >= 50:
+				opmode = 33
+		elif vsp < 6 and vsp >= 3:
+			if speed >= 1 and speed < 25:
+				opmode = 13
+			elif speed >= 25 and speed < 50:
+				opmode = 23
+			elif speed >= 50:
+				opmode = 33
+		elif vsp < 9 and vsp >= 6:
+			if speed >= 1 and speed < 25:
+				opmode = 14
+			elif speed >= 25 and speed < 50:
+				opmode = 24
+			elif speed >= 50:
+				opmode = 35
+		elif vsp < 12 and vsp >= 9:
+			if speed >= 1 and speed < 25:
+				opmode = 15
+	        elif speed >= 25 and speed < 50:
+				opmode = 25
+	        elif speed >= 50:
+				opmode = 35
+		elif vsp < 18 and vsp >= 12:
+			if speed >= 1 and speed < 25:
+				opmode=16
+	        elif speed >= 25 and speed < 50:
+				opmode=27
+	        elif speed >= 50:
+				opmode=37
+		elif vsp < 24 and vsp >= 18:
+			if speed >= 1 and speed < 25:
+				opmode=16
+	        elif speed >= 25 and speed < 50:
+				opmode=28
+	        elif speed >= 50:
+				opmode = 38
+		elif vsp < 30 and vsp >= 24:
+			if speed >= 1 and speed < 25:
+				opmode = 16
+	        elif speed >= 25 and speed < 50:
+				opmode = 29
+	        elif speed >= 50:
+				opmode = 39
+		elif vsp >= 30:
+	        if speed >= 1 and speed < 25:
+				opmode = 16
+	        elif speed >= 25 and speed < 50:
+				opmode = 30
+	        elif speed >= 50:
+				opmode = 40
