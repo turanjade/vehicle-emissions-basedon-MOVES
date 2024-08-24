@@ -8,7 +8,7 @@ def vsp(speed, acc, g, grade, vsp_coef):
 
 def opmode_id(speed, acc_series, vsp):
 	#speed in mph, acc_series includes the acceleration in the consecutive 3 seconds, according to the definition of OpMode by USEPA
-	count = len(acc_series) #track the length of the driving trajectory.
+	count = len(acc_series) #track the length of the driving trajectory. acc_series is an appending list of the acceleration
 	if count >=2:
 		if acc[count]< -2 or (acc[count]< -1 and acc[count-1]< -1 and acc[count-2]< -1):######problem here
 			opmode = 0   ###Braking
@@ -80,3 +80,13 @@ def opmode_id(speed, acc_series, vsp):
 				opmode = 30
 	        elif speed >= 50:
 				opmode = 40
+return opmode
+
+def generate_acc_series(current_t, acc_record):
+	#current_t records the current timestep of the whole trajectory
+	#acc_record records all the acceleration in a time series
+	if current_t >= 2:
+		acc_series = [acc_record[current_t-2], acc_record[current_t-1], acc_record[current_t]]
+	else:
+		acc_series = acc_record[:current_t]
+return acc_series
