@@ -16,7 +16,7 @@ import numpy as np
 #next(movespcfile)
 #next(movesptfile)
 
-def fleetshare_er(fleetfile, fleetfile, pc, pt, year, summerorwinter, gasolineordiesel):
+def fleetshare_er(fleetfile, pc, pt, year, summerorwinter, gasolineordiesel):
 
 	fleet = []
 	#####generate fleet list
@@ -25,13 +25,13 @@ def fleetshare_er(fleetfile, fleetfile, pc, pt, year, summerorwinter, gasolineor
 		fleet.append(cols)
 
 	pcer = []
-	#####generate er list
+	#####generate er list for passenger car source code 21
 	for line in movespcfile:
 		cols = [x.rstrip() for x in line.split(',')]
 		pcer.append(cols)
 
 	pter = []
-	#####generate er list
+	#####generate er list for passenger truck source code 31
 	for line in movesptfile:
 		cols = [x.rstrip() for x in line.split(',')]
 		pter.append(cols)
